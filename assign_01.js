@@ -18,7 +18,7 @@ try{
 		fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
 			console.log( "Before throwing Error" );
 			if(err)
-				throw new Error( "Error in appending data" ) ;
+				throw new Error( "Error in appending data" ) ;//throwing an user defined error.
 			console.log( "After throwing Error" );
 		});
 	});
