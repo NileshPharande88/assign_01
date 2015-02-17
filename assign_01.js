@@ -16,10 +16,8 @@ try{
 	//Getting Each element from an array and appending to txt file.
 	studentArray.forEach( function(value) {
 		fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
-			console.log( "Before throwing Error" );
 			if(err)
 				throw new Error( "Error in appending data" ) ;//throwing an user defined error.
-			console.log( "After throwing Error" );
 		});
 	});
 	/*
