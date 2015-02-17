@@ -8,10 +8,6 @@
     <name>JackieDoe</name>
     <score>453</score>
   </Student>
-  <Student id="111">
-    <name>TESTplan</name>
-    <score>444</score>
-  </Student>
   <Student id="123">
     <name>JohnDoe</name>
     <score>234</score>

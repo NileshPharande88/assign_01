@@ -1,8 +1,19 @@
 try {
-    //Reading source.json and convert it in JSON object.
+    //Reading source.json and convert it in JSON object if file is present.
     var fs = require("fs");
+    if( (fs === undefined) )
+    	throw new Error( " Can't access fs module" );
+    fs.exists("source.json",function(exists){
+    	if(!exists)
+    		throw new Error( " source.json file is not present in current folder" );
+    });
     var sourceString = fs.readFileSync("source.json");
-    var sourceJSON = JSON.parse( sourceString );
+    var sourceJSON;
+    try{
+    	sourceJSON = JSON.parse( sourceString );
+    }catch(err){
+    	throw new Error( " Can't parse json object" );
+    }
     var studentArray = sourceJSON.students;
 
 
@@ -15,22 +26,34 @@ try {
     //Getting Each element from an array and checking for tags are present or not.
     studentArray.forEach(function (value) {
     	if( (value.id === undefined) )
-    		throw new Error( "Error : Error in data" );
+    		throw new Error( " id is not found in object" );
     	else if( (value.fName === undefined) )
-    		throw new Error( "Error : Error in data" );
+    		throw new Error( " fName is not found in object" );
     	else if( (value.lName === undefined) )
-    		throw new Error( "Error : Error in data" );
+    		throw new Error( " lName is not found in object" );
     	else if( (value.score === undefined) )
-    		throw new Error( "Error : Error in data" );
+    		throw new Error( " score is not found in object" );
     });
 
-    //Creating destination.txt from arrayElements and throw Error for exceptional condition.
+
+/*
+    fs.exists("destination.txt",function(exists){
+    	if(exists)
+    		console.log("destination.txt is already present...Do you want to overwrite???");
+    	else
+    		console.log("destination.txt not present");
+    });
+*/
+
+
+
+    //Creating destination.txt from arrayElements if it is already not present.
     fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
     //Getting Each element from an array and appending to txt file.
     studentArray.forEach( function (value) {
     	fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
         	if( err )
-                throw new Error( "Error : Error in appending data" ); //throwing an user defined error.
+                throw new Error( " Error in appending data" ); //throwing an user defined error.
         });
     });
     /*
@@ -42,6 +65,11 @@ try {
         });
     }
     */
+
+
+
+
+
 
 
     //Created destination.xml using "xmlbuilder" module.
