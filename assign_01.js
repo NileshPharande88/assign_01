@@ -12,10 +12,10 @@ try {
         throw new Error( " Can't access builder module" );
 
     //check for the presence of source.json.
-    fs.exists("source.json",function(exists){
-    	if(!exists)
-    		throw new Error( " source.json file is not present in current folder" );
-    });
+    if(!fs.existsSync("source.json"))
+        throw new Error( " source.json file is not present in current folder" );
+
+
     var sourceString = fs.readFileSync("source.json");
     try{
     	sourceJSON = JSON.parse( sourceString );
@@ -78,15 +78,17 @@ try {
 
 
 
+
     //check for the presence of destination.txt and perform specific task on the response.
     if (fs.existsSync("destination.txt"))
     {
         console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
         prompt.start();
-        prompt.get(['reply'], function (err, result) {
+        isPromptRunning = true;
+        prompt.get(['treply'], function (err, result) {
             if (err) { return onErr(err); }
-            if (result.reply == "y") createOrOverwriteTextFile();
-            else if (result.reply == "n") console.log("File will remain unchanged.");
+            if (result.treply == "y") createOrOverwriteTextFile();
+            else if (result.treply == "n") console.log("File will remain unchanged.");
             else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
         });
         function onErr(err) {
@@ -103,11 +105,11 @@ try {
     if (fs.existsSync("destination.xml"))
     {
         console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
-        prompt.start();
-        prompt.get(['reply'], function (err, result) {
+        //prompt.start();
+        prompt.get(['xreply'], function (err, result) {
             if (err) { return onErr(err); }
-            if (result.reply == "y") createOrOverwriteXMLFile();
-            else if (result.reply == "n") console.log("File will remain unchanged.");
+            if (result.xreply == "y") createOrOverwriteXMLFile();
+            else if (result.xreply == "n") console.log("File will remain unchanged.");
             else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
         });
         function onErr(err) {
