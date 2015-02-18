@@ -1,14 +1,22 @@
 try {
     //Reading source.json and convert it in JSON object if file is present.
     var fs = require("fs");
+    var prompt = require('prompt');
+    var builder = require( "xmlbuilder" );
+    var sourceJSON;
     if( (fs === undefined) )
     	throw new Error( " Can't access fs module" );
+    if( (prompt === undefined) )
+        throw new Error( " Can't access prompt module" );
+    if( (builder === undefined) )
+        throw new Error( " Can't access builder module" );
+
+    //check for the presence of source.json.
     fs.exists("source.json",function(exists){
     	if(!exists)
     		throw new Error( " source.json file is not present in current folder" );
     });
     var sourceString = fs.readFileSync("source.json");
-    var sourceJSON;
     try{
     	sourceJSON = JSON.parse( sourceString );
     }catch(err){
@@ -21,8 +29,6 @@ try {
     studentArray.sort( function (a, b) {
         return b.score - a.score ;
     });
-
-
     //Getting Each element from an array and checking for tags are present or not.
     studentArray.forEach(function (value) {
     	if( (value.id === undefined) )
@@ -36,55 +42,83 @@ try {
     });
 
 
-/*
-    fs.exists("destination.txt",function(exists){
-    	if(exists)
-    		console.log("destination.txt is already present...Do you want to overwrite???");
-    	else
-    		console.log("destination.txt not present");
-    });
-*/
 
-
-
-    //Creating destination.txt from arrayElements if it is already not present.
-    fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
-    //Getting Each element from an array and appending to txt file.
-    studentArray.forEach( function (value) {
-    	fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
-        	if( err )
-                throw new Error( " Error in appending data" ); //throwing an user defined error.
+    //Create destination.txt or modify if already present, from arrayElements.
+    var createOrOverwriteTextFile = function(){
+        fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
+        //Getting Each element from an array and appending to txt file.
+        studentArray.forEach( function (value) {
+            fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
+                if( err )
+                    throw new Error( " Error in appending data" ); //throwing an user defined error.
+            });
         });
-    });
-    /*
-    for(var ele in studentArray) {
-        var student = studentArray[ele];
-        fs.appendFile("destination.txt", student.id + " | " + student.fName + " | " + student.lName + " | " + student.score + "\n", function(err){
-            if (err)
-                throw new Error( "Error in appending data" ) ;
+        fs.exists("destination.txt",function(exists){
+            if (!exists) console.log("destination.txt is not created.");
+            console.log("destination.txt is created or modified.");
         });
     }
-    */
+    //check for the presence of destination.txt.
+    fs.exists("destination.txt",function(exists){
+        if(exists)
+        {
+            console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
+            prompt.start();
+            prompt.get(['reply'], function (err, result) {
+                if (err) { return onErr(err); }
+                if (result.reply == "y") createOrOverwriteTextFile();
+                else if (result.reply == "n") console.log("File will remain unchanged.");
+                else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
+            });
+            function onErr(err) {
+                console.log(err);
+                return 1;
+            }
+        } else {
+            createOrOverwriteTextFile();
+        }
+    });//End of all code about destination.txt.
+    
 
-
-
-
-
-
-
+/*
     //Created destination.xml using "xmlbuilder" module.
-    var builder = require( "xmlbuilder" );
-    var rootElement = builder.create( "Students" );
-    //Getting Each element from an array and appending to xml file.
-    studentArray.forEach( function(value) {
-        var student = rootElement.ele( 'Student', {'id': value.id} );
-        student.ele( 'name', value.fName + value.lName );
-        student.ele( 'score', value.score  );
-    });
-    var xmlString = rootElement.end( {pretty: true} );
-    //console.log(xmlString);
-    fs.writeFile( 'destination.xml', xmlString );
-	
+    var createOrOverwriteXMLFile = function(){
+        var rootElement = builder.create( "Students" );
+        //Getting Each element from an array and appending to xml file.
+        studentArray.forEach( function(value) {
+            var student = rootElement.ele( 'Student', {'id': value.id} );
+            student.ele( 'name', value.fName + value.lName );
+            student.ele( 'score', value.score  );
+        });
+        var xmlString = rootElement.end( {pretty: true} );
+        //console.log(xmlString);
+        fs.writeFileSync( 'destination.xml', xmlString );
+        fs.exists("destination.xml",function(exists){
+            if (!exists) console.log("destination.xml is not created.");
+            console.log("destination.xml is created or modified.");
+        });
+    }
+    //check for the presence of destination.xml.
+    fs.exists("destination.xml",function(exists){
+        if(exists)
+        {
+            console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
+            prompt.start();
+            prompt.get(['reply'], function (err, result) {
+                if (err) { return onErr(err); }
+                if (result.reply == "y") createOrOverwriteXMLFile;
+                else if (result.reply == "n") console.log("File will remain unchanged.");
+                else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
+            });
+            function onErr(err) {
+                console.log(err);
+                return 1;
+            }
+        } else {
+            createOrOverwriteXMLFile;
+        }
+    });//End of all code about destination.xml.
+*/
 }catch( errorMessage ) {
     console.log(errorMessage );
 }
