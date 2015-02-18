@@ -42,7 +42,6 @@ try {
     });
 
 
-
     //Create destination.txt or modify if already present, from arrayElements.
     var createOrOverwriteTextFile = function(){
         fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
@@ -58,30 +57,7 @@ try {
             console.log("destination.txt is created or modified.");
         });
     }
-    //check for the presence of destination.txt.
-    fs.exists("destination.txt",function(exists){
-        if(exists)
-        {
-            console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
-            prompt.start();
-            prompt.get(['reply'], function (err, result) {
-                if (err) { return onErr(err); }
-                if (result.reply == "y") createOrOverwriteTextFile();
-                else if (result.reply == "n") console.log("File will remain unchanged.");
-                else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
-            });
-            function onErr(err) {
-                console.log(err);
-                return 1;
-            }
-        } else {
-            createOrOverwriteTextFile();
-        }
-    });//End of all code about destination.txt.
-    
-
-/*
-    //Created destination.xml using "xmlbuilder" module.
+    //Created destination.xml using "xmlbuilder" module from arrayElements.
     var createOrOverwriteXMLFile = function(){
         var rootElement = builder.create( "Students" );
         //Getting Each element from an array and appending to xml file.
@@ -98,26 +74,49 @@ try {
             console.log("destination.xml is created or modified.");
         });
     }
-    //check for the presence of destination.xml.
-    fs.exists("destination.xml",function(exists){
-        if(exists)
-        {
-            console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
-            prompt.start();
-            prompt.get(['reply'], function (err, result) {
-                if (err) { return onErr(err); }
-                if (result.reply == "y") createOrOverwriteXMLFile;
-                else if (result.reply == "n") console.log("File will remain unchanged.");
-                else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
-            });
-            function onErr(err) {
-                console.log(err);
-                return 1;
-            }
-        } else {
-            createOrOverwriteXMLFile;
+
+
+
+
+    //check for the presence of destination.txt and perform specific task on the response.
+    if (fs.existsSync("destination.txt"))
+    {
+        console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
+        prompt.start();
+        prompt.get(['reply'], function (err, result) {
+            if (err) { return onErr(err); }
+            if (result.reply == "y") createOrOverwriteTextFile();
+            else if (result.reply == "n") console.log("File will remain unchanged.");
+            else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
+        });
+        function onErr(err) {
+            console.log(err);
+            return 1;
         }
-    });//End of all code about destination.xml.
+    } else {
+        createOrOverwriteTextFile();
+    }//End of all code about destination.txt.
+
+
+/*   
+    //check for the presence of destination.xml and perform specific task on the response.
+    if (fs.existsSync("destination.xml"))
+    {
+        console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
+        prompt.start();
+        prompt.get(['reply'], function (err, result) {
+            if (err) { return onErr(err); }
+            if (result.reply == "y") createOrOverwriteXMLFile();
+            else if (result.reply == "n") console.log("File will remain unchanged.");
+            else console.log("Please Enter only y or n ...Currently file will remain unchanged.");
+        });
+        function onErr(err) {
+            console.log(err);
+            return 1;
+        }
+    } else {
+        createOrOverwriteXMLFile();
+    }//End of all code about destination.xml.
 */
 }catch( errorMessage ) {
     console.log(errorMessage );
