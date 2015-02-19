@@ -1,4 +1,5 @@
 try {
+    "use strict";
     //Reading source.json and convert it in JSON object if file is present.
     var fs = require("fs");
     var prompt = require('prompt');
