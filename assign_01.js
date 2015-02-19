@@ -2,21 +2,16 @@ try {
     //Reading source.json and convert it in JSON object if file is present.
     var fs = require("fs");
     var prompt = require('prompt');
-    var builder = require( "xmlbuilder" );
-    var async = require( "async" );
+    var builder = require("xmlbuilder");
+    var async = require("async");
     var sourceJSON;
-    if( (fs === undefined) )
-    	throw new Error( " Can't access fs module" );
-    if( (prompt === undefined) )
-        throw new Error( " Can't access prompt module" );
-    if( (builder === undefined) )
-        throw new Error( " Can't access builder module" );
-    if( (async === undefined) )
-        throw new Error( " Can't access async module" );
+    if ((fs === undefined)) throw new Error( " Can't access fs module" );
+    if ((prompt === undefined)) throw new Error( " Can't access prompt module" );
+    if ((builder === undefined)) throw new Error( " Can't access builder module" );
+    if ((async === undefined)) throw new Error( " Can't access async module" );
 
     //check for the presence of source.json.
-    if(!fs.existsSync("source.json"))
-        throw new Error( " source.json file is not present in current folder" );
+    if(!fs.existsSync("source.json")) throw new Error( " source.json file is not present in current folder" );
 
 
     var sourceString = fs.readFileSync("source.json");
