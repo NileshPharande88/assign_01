@@ -56,14 +56,8 @@ try {
             });
         });
         fs.exists("destination.txt",function(exists){
-            if (exists) {
-                console.log("destination.txt is created or modified.");
-                return cb(null, "Success");
-            }
-            else {
-                console.log("destination.txt is not created.");
-                return cb(1, "Failed");
-            }
+            if (exists) return cb(null, "destination.txt is created or modified.");
+            else return cb(1, "destination.txt is not created.");
         });
     }
     //Created destination.xml or modify using "xmlbuilder" module from arrayElements.
@@ -79,18 +73,10 @@ try {
         //console.log(xmlString);
         fs.writeFileSync( 'destination.xml', xmlString );
         fs.exists("destination.xml",function(exists){
-            if (exists) {
-                console.log("destination.xml is created or modified.");
-                return cb(null, "Success");
-            }
-            else {
-                console.log("destination.xml is not created.");
-                return cb(1, "Failed");
-            }
+            if (exists) return cb(null, "destination.xml is created or modified.");
+            else return cb(1, "destination.xml is not created.");
         });
     }
-
-
 
 
     //check for the presence of destination.txt and perform specific task on the response.
@@ -100,47 +86,35 @@ try {
             console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
             prompt.start();
             isPromptRunning = true;
-            prompt.get(['treply'], function (err, result) {
+            prompt.get(['text_reply'], function (err, result) {
                 if (err) { return onErr(err); }
-                if (result.treply == "y") createOrOverwriteTextFile(cb);
-                else if (result.treply == "n"){
-                    console.log("File will remain unchanged.");
-                    return cb(null, "Success"); 
-                } else  {
-                    console.log("Please Enter only y or n ...Currently file will remain unchanged.");
-                    return cb(1, "Failed"); 
-                }
+                if (result.text_reply == "y") { createOrOverwriteTextFile(cb); }
+                else if (result.text_reply == "n"){ return cb(null, "txt file will remain unchanged."); }
+                else  { return cb(1, "Please Enter only y or n ...Currently txt file will remain unchanged."); }
             });
             function onErr(err) {
                 console.log(err);
-                return cb(1, "Failed"); 
+                return cb(1, "Failed to get reply from user for txt file"); 
             }
         } else {
             createOrOverwriteTextFile();
         }
     }//End of all code about destination.txt.
-
-
     //check for the presence of destination.xml and perform specific task on the response.
     var destXMLFile = function(cb){
         if (fs.existsSync("destination.xml"))
         {
             console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
             //prompt.start();
-            prompt.get(['xreply'], function (err, result) {
+            prompt.get(['xml_reply'], function (err, result) {
                 if (err) { return onErr(err); }
-                if (result.xreply == "y") createOrOverwriteXMLFile();
-                else if (result.xreply == "n") {
-                    console.log("File will remain unchanged.");
-                    return cb(null, "Success"); 
-                } else {
-                    console.log("Please Enter only y or n ...Currently file will remain unchanged.");
-                    return cb(1, "Failed"); 
-                }
+                if (result.xml_reply == "y") { createOrOverwriteXMLFile(cb); }
+                else if (result.xml_reply == "n") { return cb(null, "xml file will remain unchanged."); }
+                else  { return cb(1, "Please Enter only y or n ...Currently xml file will remain unchanged."); }
             });
             function onErr(err) {
                 console.log(err);
-                return cb(1, "Failed"); 
+                return cb(1, "Failed to get reply from user for xml file"); 
             }
         } else {
             createOrOverwriteXMLFile();
@@ -148,24 +122,26 @@ try {
     }//End of all code about destination.xml.
 
 
-
+    //Synchronous calling of two functions
     async.series([
         function(callback){
             destTextFile(function(err, res){
                 if(err){
-                    callback(1, 'one failed');
+                    console.log("Failed: "+ res);
+                    callback(null, 'one failed');
                 }else{
-                    console.log("One function is successfully executed.");
+                    console.log("Successful: "+ res);
                     callback(null, 'one success');
                 }
             });
         },
         function(callback){
            destXMLFile(function(err, res){
-                if(err){
-                    callback(1, 'Second failed');
-                }else{
-                    console.log("Second function is successfully executed.");
+                if (err) {
+                    console.log("Failed: "+ res);
+                    callback(null, 'Second failed');
+                } else {
+                    console.log("Successful: "+ res);
                     callback(null, 'Second success');    
                 }
             });
@@ -173,8 +149,7 @@ try {
     ],
     // optional callback 
     function(err, results){
-        console.log("All functions are successfully executed." + results);
-        // results is now equal to ['one', 'two'] 
+        console.log("Final Result: " + results);
     });  
 
 }catch( errorMessage ) {
