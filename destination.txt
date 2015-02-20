@@ -1,4 +1,4 @@
 First Name | Last Name | Score
 124 | Jane | Doe | 543
-123 | John | Doe | 234
 125 | Jackie | Doe | 453
+123 | John | Doe | 234
