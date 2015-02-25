@@ -93,7 +93,7 @@ try {
                 return cb(1, "Failed to get reply from user for txt file"); 
             }
         } else {
-            createOrOverwriteTextFile();
+            createOrOverwriteTextFile(cb);
         }
     }//End of all code about destination.txt.
     //check for the presence of destination.xml and perform specific task on the response.
@@ -101,7 +101,7 @@ try {
         if (fs.existsSync("destination.xml"))
         {
             console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
-            //prompt.start();
+            prompt.start();
             prompt.get(['xml_reply'], function (err, result) {
                 if (err) { return onErr(err); }
                 if (result.xml_reply == "y") { createOrOverwriteXMLFile(cb); }
@@ -113,7 +113,7 @@ try {
                 return cb(1, "Failed to get reply from user for xml file"); 
             }
         } else {
-            createOrOverwriteXMLFile();
+            createOrOverwriteXMLFile(cb);
         }
     }//End of all code about destination.xml.
 
