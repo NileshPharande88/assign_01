@@ -1,44 +1,56 @@
+//This file conreading source.json and convert it in JSON object if file is present.
 try {
     "use strict";
-    //Reading source.json and convert it in JSON object if file is present.
     var fs = require("fs");
     var prompt = require('prompt');
     var builder = require("xmlbuilder");
     var async = require("async");
-    var sourceJSON;
-    if ((fs === undefined)) throw new Error( " Can't access fs module" );
-    if ((prompt === undefined)) throw new Error( " Can't access prompt module" );
-    if ((builder === undefined)) throw new Error( " Can't access builder module" );
-    if ((async === undefined)) throw new Error( " Can't access async module" );
 
-    //check for the presence of source.json.
-    if(!fs.existsSync("source.json")) throw new Error( " source.json file is not present in current folder" );
-
-
-    var sourceString = fs.readFileSync("source.json");
-    try{
-    	sourceJSON = JSON.parse( sourceString );
-    }catch(err){
-    	throw new Error( " Can't parse json object" );
+    //Throws an error if any of these modules are not required properly.
+    if (fs === undefined) {
+        throw new Error(" Can't access fs module");
     }
+    if (prompt === undefined) {
+        throw new Error(" Can't access prompt module");
+    }
+    if (builder === undefined) {
+        throw new Error(" Can't access builder module");
+    }
+    if (async === undefined) {
+        throw new Error(" Can't access async module");
+    }
+
+
+    if ( !fs.existsSync("source.json") ) {
+        throw new Error(" source.json file is not present in current folder");
+    }
+    var sourceString = fs.readFileSync("source.json");
+    var sourceJSON = JSON.parse( sourceString );
     var studentArray = sourceJSON.students;
-
-
-    //Sorting of arrayElements using score.
-    studentArray.sort( function (a, b) {
-        return b.score - a.score ;
-    });
     //Getting Each element from an array and checking for tags are present or not.
-    studentArray.forEach(function (value) {
-    	if( (value.id === undefined) )
-    		throw new Error( " id is not found in object" );
-    	else if( (value.fName === undefined) )
-    		throw new Error( " fName is not found in object" );
-    	else if( (value.lName === undefined) )
-    		throw new Error( " lName is not found in object" );
-    	else if( (value.score === undefined) )
-    		throw new Error( " score is not found in object" );
-    });
+    for (x in studentArray) {
+        if( studentArray[x].id === undefined ) {
+            throw new Error(" id is not found in object");
+        } else if( studentArray[x].fName === undefined ) {
+            throw new Error(" fName is not found in object");
+        } else if( studentArray[x].lName === undefined ) {
+            throw new Error(" lName is not found in object");
+        } else if( studentArray[x].score === undefined ) {
+            throw new Error(" score is not found in object");
+        }
+    }
+
+    //Descending sor of arrayElements using score.
+    for ( var x = 0; x < studentArray.length-1; x++) {
+        for ( var y = x+1; y < studentArray.length; y++) {
+            if(studentArray[x].score < studentArray[y].score) {
+                var tempScore = studentArray[x].score;
+                studentArray[x].score = studentArray[y].score;
+                studentArray[y].score = tempScore;
+            }
+        }
+    }
+
 
 
     //Create destination.txt or modify if already present, from arrayElements.
@@ -119,34 +131,32 @@ try {
 
 
     //Synchronous calling of two functions
-    async.series([
-        function(callback){
-            destTextFile(function(err, res){
-                if(err){
-                    console.log("Failed: "+ res);
-                    callback(null, 'one failed');
-                }else{
-                    console.log("Successful: "+ res);
-                    callback(null, 'one success');
-                }
-            });
-        },
-        function(callback){
-           destXMLFile(function(err, res){
+    async.series ([
+        function (callback) {
+            destTextFile ( function (err, res) {
                 if (err) {
                     console.log("Failed: "+ res);
-                    callback(null, 'Second failed');
-                } else {
-                    console.log("Successful: "+ res);
-                    callback(null, 'Second success');    
+                    callback(null, 'one failed');
                 }
+                console.log("Successful: "+ res);
+                callback(null, 'one success');
+            });
+        },
+        function (callback) {
+            destXMLFile ( function (err, res) {
+                if (err) {
+                    console.log("Failed: "+ res);
+                    callback(null, 'one failed');
+                }
+                console.log("Successful: "+ res);
+                callback(null, 'one success');
             });
         }
     ],
     // optional callback 
     function(err, results){
         console.log("Final Result: " + results);
-    });  
+    });
 
 }catch( errorMessage ) {
     console.log(errorMessage );
