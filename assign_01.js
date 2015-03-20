@@ -58,7 +58,7 @@ try {
         //Getting Each element from an array and appending to txt file.
         var errorInwriting = false;
         for (var x = 0; x < studentArray.length; x++) {
-            fs.appendFile( "destination.txt", studentArray[x].id + " | " + studentArray[x].fName + " | " + studentArray[x].lName + " | " + studentArray[x].score + "\n", function (err) {
+            fs.appendFile( "destination.txt", studentArray[x].id + " | " + studentArray[x].fName + " | " + studentArray[x].lName + " | " + studentArray[x].score + "\n", function afterAppendingTextFile(err) {
                 if ( err ) {
                     errorInwriting = true;
                 }
@@ -70,7 +70,7 @@ try {
         if (errorInwriting) {
             return cb(new Error(" Error in appending data."), null);
         }
-        fs.exists("destination.txt", function (exists) {
+        fs.exists("destination.txt", function isTextFileExists(exists) {
             if (exists) {
                 return cb(null, "destination.txt is created or modified.");
             }
@@ -88,7 +88,7 @@ try {
         }
         var xmlString = rootElement.end( {pretty: true} );
         fs.writeFileSync( 'destination.xml', xmlString );
-        fs.exists("destination.xml", function (exists) {
+        fs.exists("destination.xml", function isXMLFileExists(exists) {
             if (exists) {
                 return cb(null, "destination.xml is created or modified.");
             }
@@ -106,7 +106,7 @@ try {
         console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
         prompt.start();
         isPromptRunning = true;
-        prompt.get(['text_reply'], function (err, result) {
+        prompt.get(['text_reply'], function afterTextPromptreply(err, result) {
             if (err) {
                 console.log(err);
                 return cb(new Error(" Failed to get reply from user for text file."), null);
@@ -127,7 +127,7 @@ try {
         //File is exists already. So ask user before override it.
         console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
         prompt.start();
-        prompt.get(['xml_reply'], function (err, result) {
+        prompt.get(['xml_reply'], function afterXMLPromptReply(err, result) {
             if (err) {
                 console.log(err);
                 return cb(new Error(" Failed to get reply from user for xml file."), null);
@@ -144,7 +144,7 @@ try {
 
     async.series ([
         function (callback) {
-            destTextFile ( function (err, res) {
+            destTextFile ( function afterTextFileCreation(err, res) {
                 if (err) {  //Error occurred during text file creation.
                     console.log(err);
                     return callback(null, 'one failed');
@@ -154,7 +154,7 @@ try {
             });
         },
         function (callback) {
-            destXMLFile ( function (err, res) {
+            destXMLFile ( function afterXMLFileCreation(err, res) {
                 if (err) {  //Error occurred during XML file creation.
                     console.log(err);
                     return callback(null, 'one failed');
@@ -163,9 +163,7 @@ try {
                 return callback(null, 'one success');
             });
         }
-    ],
-    // optional callback 
-    function(err, results){  //Sends an array of responces in results variable.
+    ], function asyncSeriesCallback(err, results){  //Sends an array of responces in results variable.
         console.log("Final Result: " + results);
     });
 
