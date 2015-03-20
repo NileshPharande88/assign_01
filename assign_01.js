@@ -52,109 +52,120 @@ try {
     }
 
 
-
     //Create destination.txt or modify if already present, from arrayElements.
-    var createOrOverwriteTextFile = function(cb){
+    var createOrOverwriteTextFile = function (cb) {
         fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
         //Getting Each element from an array and appending to txt file.
-        studentArray.forEach( function (value) {
-            fs.appendFile( "destination.txt", value.id + " | " + value.fName + " | " + value.lName + " | " + value.score + "\n", function (err) {
-                if( err )
-                    throw new Error( " Error in appending data" ); //throwing an user defined error.
+        var errorInwriting = false;
+        for (var x = 0; x < studentArray.length; x++) {
+            fs.appendFile( "destination.txt", studentArray[x].id + " | " + studentArray[x].fName + " | " + studentArray[x].lName + " | " + studentArray[x].score + "\n", function (err) {
+                if ( err ) {
+                    errorInwriting = true;
+                }
             });
-        });
-        fs.exists("destination.txt",function(exists){
-            if (exists) return cb(null, "destination.txt is created or modified.");
-            else return cb(1, "destination.txt is not created.");
+            if (errorInwriting) {
+                break;
+            }
+        }
+        if (errorInwriting) {
+            return cb(new Error(" Error in appending data."), null);
+        }
+        fs.exists("destination.txt",function(exists) {
+            if (exists) {
+                return cb(null, "destination.txt is created or modified.");
+            }
+            return cb(new Error(" destination.txt is not created."), null);
         });
     }
-    //Created destination.xml or modify using "xmlbuilder" module from arrayElements.
-    var createOrOverwriteXMLFile = function(cb){
+    //Create destination.xml or modify using "xmlbuilder" module from arrayElements.
+    var createOrOverwriteXMLFile = function (cb) {
         var rootElement = builder.create( "Students" );
         //Getting Each element from an array and appending to xml file.
-        studentArray.forEach( function(value) {
-            var student = rootElement.ele( 'Student', {'id': value.id} );
-            student.ele( 'name', value.fName + value.lName );
-            student.ele( 'score', value.score  );
-        });
+        for (x in studentArray) {
+            var student = rootElement.ele( 'Student', {'id': studentArray[x].id} );
+            student.ele( 'name', studentArray[x].fName + " "+ studentArray[x].lName );
+            student.ele( 'score', studentArray[x].score );
+        }
         var xmlString = rootElement.end( {pretty: true} );
-        //console.log(xmlString);
         fs.writeFileSync( 'destination.xml', xmlString );
         fs.exists("destination.xml",function(exists){
-            if (exists) return cb(null, "destination.xml is created or modified.");
-            else return cb(1, "destination.xml is not created.");
+            if (exists) {
+                return cb(null, "destination.xml is created or modified.");
+            }
+            return cb(new Error(" destination.xml is not created."), null);
         });
     }
 
 
     //check for the presence of destination.txt and perform specific task on the response.
-    var destTextFile = function(cb){
-        if (fs.existsSync("destination.txt"))
-        {
-            console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
-            prompt.start();
-            isPromptRunning = true;
-            prompt.get(['text_reply'], function (err, result) {
-                if (err) { return onErr(err); }
-                if (result.text_reply == "y") { createOrOverwriteTextFile(cb); }
-                else if (result.text_reply == "n"){ return cb(null, "txt file will remain unchanged."); }
-                else  { return cb(1, "Please Enter only y or n ...Currently txt file will remain unchanged."); }
-            });
-            function onErr(err) {
-                console.log(err);
-                return cb(1, "Failed to get reply from user for txt file"); 
-            }
-        } else {
-            createOrOverwriteTextFile(cb);
+    var destTextFile = function (cb) {
+        if ( !fs.existsSync("destination.txt") ) {
+            return createOrOverwriteTextFile(cb);
         }
+        //File is exists already. So ask user before override it.
+        console.log("destination.txt is already present...Do you want to overwrite???(y/n)");
+        prompt.start();
+        isPromptRunning = true;
+        prompt.get(['text_reply'], function (err, result) {
+            if (err) {
+                console.log(err);
+                return cb(new Error(" Failed to get reply from user for text file."), null);
+            }
+            if (result.text_reply == "y") {
+                return createOrOverwriteTextFile(cb);
+            } else if (result.text_reply == "n") {
+                return cb(null, "txt file will remain unchanged.");
+            }  //User not giving proper response so send an error.
+            return cb(new Error(" Please Enter only y or n ...Currently txt file will remain unchanged."), null);
+        });
     }//End of all code about destination.txt.
     //check for the presence of destination.xml and perform specific task on the response.
-    var destXMLFile = function(cb){
-        if (fs.existsSync("destination.xml"))
-        {
-            console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
-            prompt.start();
-            prompt.get(['xml_reply'], function (err, result) {
-                if (err) { return onErr(err); }
-                if (result.xml_reply == "y") { createOrOverwriteXMLFile(cb); }
-                else if (result.xml_reply == "n") { return cb(null, "xml file will remain unchanged."); }
-                else  { return cb(1, "Please Enter only y or n ...Currently xml file will remain unchanged."); }
-            });
-            function onErr(err) {
-                console.log(err);
-                return cb(1, "Failed to get reply from user for xml file"); 
-            }
-        } else {
-            createOrOverwriteXMLFile(cb);
+    var destXMLFile = function (cb) {
+        if ( !fs.existsSync("destination.xml") ) {
+            return createOrOverwriteXMLFile(cb);
         }
+        //File is exists already. So ask user before override it.
+        console.log("destination.xml is already present...Do you want to overwrite???(y/n)");
+        prompt.start();
+        prompt.get(['xml_reply'], function (err, result) {
+            if (err) {
+                console.log(err);
+                return cb(new Error(" Failed to get reply from user for xml file."), null);
+            }
+            if (result.xml_reply == "y") {
+                return createOrOverwriteXMLFile(cb);
+            } else if (result.xml_reply == "n") {
+                return cb(null, "xml file will remain unchanged.");
+            }  //User not giving proper response so send an error.
+            return cb(new Error(" Please Enter only y or n ...Currently xml file will remain unchanged."), null);
+        });
     }//End of all code about destination.xml.
 
 
-    //Synchronous calling of two functions
     async.series ([
         function (callback) {
             destTextFile ( function (err, res) {
-                if (err) {
-                    console.log("Failed: "+ res);
-                    callback(null, 'one failed');
-                }
+                if (err) {  //Error occurred during text file creation.
+                    console.log(err);
+                    return callback(null, 'one failed');
+                }  //Text file creation was successful do next tasks.
                 console.log("Successful: "+ res);
-                callback(null, 'one success');
+                return callback(null, 'one success');
             });
         },
         function (callback) {
             destXMLFile ( function (err, res) {
-                if (err) {
-                    console.log("Failed: "+ res);
-                    callback(null, 'one failed');
-                }
+                if (err) {  //Error occurred during XML file creation.
+                    console.log(err);
+                    return callback(null, 'one failed');
+                }  //XML file creation was successful do next tasks.
                 console.log("Successful: "+ res);
-                callback(null, 'one success');
+                return callback(null, 'one success');
             });
         }
     ],
     // optional callback 
-    function(err, results){
+    function(err, results){  //Sends an array of responces in results variable.
         console.log("Final Result: " + results);
     });
 
