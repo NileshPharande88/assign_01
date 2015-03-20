@@ -70,7 +70,7 @@ try {
         if (errorInwriting) {
             return cb(new Error(" Error in appending data."), null);
         }
-        fs.exists("destination.txt",function(exists) {
+        fs.exists("destination.txt", function (exists) {
             if (exists) {
                 return cb(null, "destination.txt is created or modified.");
             }
@@ -88,7 +88,7 @@ try {
         }
         var xmlString = rootElement.end( {pretty: true} );
         fs.writeFileSync( 'destination.xml', xmlString );
-        fs.exists("destination.xml",function(exists){
+        fs.exists("destination.xml", function (exists) {
             if (exists) {
                 return cb(null, "destination.xml is created or modified.");
             }
