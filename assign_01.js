@@ -56,19 +56,8 @@ try {
     var createOrOverwriteTextFile = function (cb) {
         fs.writeFileSync( "destination.txt", "First Name | Last Name | Score\n" );
         //Getting Each element from an array and appending to txt file.
-        var errorInwriting = false;
         for (var x = 0; x < studentArray.length; x++) {
-            fs.appendFile( "destination.txt", studentArray[x].id + " | " + studentArray[x].fName + " | " + studentArray[x].lName + " | " + studentArray[x].score + "\n", function afterAppendingTextFile(err) {
-                if ( err ) {
-                    errorInwriting = true;
-                }
-            });
-            if (errorInwriting) {
-                break;
-            }
-        }
-        if (errorInwriting) {
-            return cb(new Error(" Error in appending data."), null);
+            fs.appendFileSync( "destination.txt", studentArray[x].id + " | " + studentArray[x].fName + " | " + studentArray[x].lName + " | " + studentArray[x].score + "\n");
         }
         fs.exists("destination.txt", function isTextFileExists(exists) {
             if (exists) {
