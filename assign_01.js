@@ -44,9 +44,9 @@ try {
     for ( var x = 0; x < studentArray.length-1; x++) {
         for ( var y = x+1; y < studentArray.length; y++) {
             if(studentArray[x].score < studentArray[y].score) {
-                var tempScore = studentArray[x].score;
-                studentArray[x].score = studentArray[y].score;
-                studentArray[y].score = tempScore;
+                var tempStudent = studentArray[x];
+                studentArray[x] = studentArray[y];
+                studentArray[y] = tempStudent;
             }
         }
     }
